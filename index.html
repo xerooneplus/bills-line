@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>MyBill — LIFF</title>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    :root { --teal:#0f6e6e; --accent:#14b8a6; --bg:#f5f7f7; --card:#fff; --ink:#1f2937; --muted:#6b7280; }
+    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    body { margin:0; font-family:-apple-system,"Sarabun","Segoe UI",sans-serif;
+           background:var(--bg); color:var(--ink); min-height:100vh;
+           display:flex; align-items:center; justify-content:center; padding:24px; }
+    .card { background:var(--card); border-radius:20px; padding:32px 24px; width:100%;
+            max-width:360px; box-shadow:0 10px 40px rgba(15,110,110,.12); text-align:center; }
+    .logo { font-size:40px; margin-bottom:4px; }
+    h1 { font-size:20px; margin:0 0 4px; color:var(--teal); }
+    .sub { color:var(--muted); font-size:13px; margin-bottom:24px; }
+    img.avatar { width:96px; height:96px; border-radius:50%; object-fit:cover;
+                 border:3px solid var(--accent); margin-bottom:12px; }
+    .name { font-size:18px; font-weight:700; margin:0 0 8px; }
+    .uid { font-size:11px; color:var(--muted); word-break:break-all;
+           background:var(--bg); padding:8px 10px; border-radius:8px; margin:8px 0; }
+    .ok { display:inline-block; background:var(--accent); color:#fff; font-weight:700;
+          padding:6px 16px; border-radius:999px; font-size:13px; margin-top:8px; }
+    .err { color:#b91c1c; font-size:13px; }
+    .spinner { width:28px; height:28px; border:3px solid #e5e7eb; border-top-color:var(--teal);
+               border-radius:50%; animation:spin .8s linear infinite; margin:8px auto; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    button { margin-top:16px; background:var(--teal); color:#fff; border:0; border-radius:10px;
+             padding:10px 18px; font-size:14px; font-weight:600; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">💸</div>
+    <h1>MyBill</h1>
+    <div class="sub">บันทึกบิล + แจ้งเตือนรอบจ่าย</div>
+    <div id="app"><div class="spinner"></div><div>กำลังเชื่อมต่อ LINE…</div></div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    async function main() {
+      const app = document.getElementById('app');
+      if (!window.LIFF_ID || LIFF_ID === 'PUT_LIFF_ID_HERE') {
+        app.innerHTML = '<div class="err">ยังไม่ได้ตั้ง LIFF_ID<br>แก้ในไฟล์ <b>config.js</b> ก่อน</div>';
+        return;
+      }
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) { liff.login(); return; }
+        const p = await liff.getProfile();
+        app.innerHTML = `
+          <img class="avatar" src="${p.pictureUrl || ''}" alt="">
+          <div class="name">สวัสดี ${p.displayName} 👋</div>
+          <div class="uid">userId: ${p.userId}</div>
+          <div class="ok">LIFF ทำงานแล้ว ✅</div>
+          <div><button onclick="liff.closeWindow()">ปิดหน้าต่าง</button></div>`;
+      } catch (e) {
+        app.innerHTML = '<div class="err">LIFF error:<br>' + (e.message || e) + '</div>';
+      }
+    }
+    main();
+  </script>
+</body>
+</html>

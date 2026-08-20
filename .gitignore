@@ -1,0 +1,23 @@
+# secrets — ห้าม commit เด็ดขาด
+.env
+.env.*
+*.key
+server/.env
+
+# python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# node
+node_modules/
+
+# data / uploads
+*.sqlite
+*.db
+uploads/
+bills_images/
+
+# os
+.DS_Store
